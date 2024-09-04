@@ -48,5 +48,5 @@ jobs:
         path: build/reports/jacoco/test/html/**
         
     - name: Run Deployment
-      run: java -jar build/libs/unleash_test.jar
+      run: java -jar build/libs/unleash-test-V1.jar
 
