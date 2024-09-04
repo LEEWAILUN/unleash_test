@@ -19,11 +19,19 @@ jobs:
       with:
         node-version: '18'  # Specify your Node.js version
 
-    - name: Install dependencies
-      run: npm install
+    - name: Cache Node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
-    - name: Build with TypeScript
-      run: npx tsc
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build
+      run: yarn build
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v3
@@ -32,13 +40,19 @@ jobs:
         path: dist/**
 
     - name: Run Tests
-      run: npm test
+      run: yarn test
 
     - name: Upload Test Reports
       uses: actions/upload-artifact@v3
       with:
         name: test-reports
-        path: test-reports/**  # Adjust this if necessary
+        path: test-reports/**
 
-    - name: Run Deployment
-      run: node dist/index.js  # Adjust this to your entry point
+    - name: Generate code coverage report
+      run: yarn coverage
+
+    - name: Upload code coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report
+        path: coverage/**

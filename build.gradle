@@ -7,7 +7,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-group = 'com.example'
+group = 'lib'
 version = 'V1'
 
 repositories {
@@ -32,7 +32,7 @@ test {
 
  jar {
     manifest {
-        attributes 'Main-Class': 'com.example.unleash'        
+        attributes 'Main-Class': 'lib.*'        
     }
 
     from sourceSets.main.output  // Include compiled classes in the JAR
