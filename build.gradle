@@ -1,87 +1,53 @@
+apply plugin: 'java'
+apply plugin:'jacoco'
+jacoco {
+    toolVersion = "0.8.7"
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+group = 'com.example'
+version = 'V1'
 
-plugins {
-    id 'base'
+repositories {
+    mavenCentral()
 }
 
-task runDocker(type: Exec) {
-    description = 'Run Docker File'
-    commandLine 'docker', 'compose', 'up', '-d'
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
 }
 
-task runYarnInstall(type: Exec) {
-    // Path to the Yarn executable in the project
-    def yarnPath = 'C:/unleash-main/.yarn/releases/yarn-4.3.1.cjs'
+test {
+    // Specify the directory containing test classes
+    testClassesDirs = sourceSets.test.output.classesDirs
 
-    // Command to run Yarn install
-    commandLine 'node', yarnPath, 'install'
-
-    // Set the working directory to where your package.json is located
-    workingDir 'C:/unleash'
-
-    // Print command output for debugging
-    standardOutput = System.out
-    errorOutput = System.err
+    // Optionally configure test options
+    testLogging {
+        // Configure which events to log during test execution
+        events 'passed', 'skipped', 'failed'
+    }
+    finalizedBy jacocoTestReport
 }
 
-task runYarnInstallFrontEnd(type: Exec) {
-    // Path to the Yarn executable in the project
-    def yarnPath = 'C:/unleash-main/.yarn/releases/yarn-4.3.1.cjs'
+ jar {
+    manifest {
+        attributes 'Main-Class': 'com.example.HelloWorld'        
+    }
 
-    // Command to run Yarn install
-    commandLine 'node', yarnPath, 'install'
-
-    // Set the working directory to where your package.json is located
-    workingDir 'C:/unleash/frontend'
-
-    // Print command output for debugging
-    standardOutput = System.out
-    errorOutput = System.err
+    from sourceSets.main.output  // Include compiled classes in the JAR
+    archiveBaseName = 'hello-world-java'  // Name of the JAR file
+    destinationDirectory = file('build/libs')  // Output directory for the JAR file
 }
 
-task runDatabase(type: Exec) {
-    description = 'Create a new database for the project'
-    commandLine 'docker', 'run',
-        '-e', 'POSTGRES_USER=unleash_user',
-        '-e', 'POSTGRES_PASSWORD=password',
-        '-e', 'POSTGRES_DB=unleash',
-        '--name', 'postgres',
-        '-p', '5432:5432',
-        '-d',
-        'postgres'
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 
-task executeDatabase(type: Exec){
-    description = 'Run the database'
-    commandLine 'docker', 'start', 'postgres'
-}
 
-task runBuild(type: Exec) {
-    // Path to the Yarn executable in the project
-    def yarnPath = 'C:/unleash-main/.yarn/releases/yarn-4.3.1.cjs'
 
-    // Command to run Yarn in order to build the application
-    commandLine 'node', yarnPath, 'build'
-
-    // Set the working directory to where your package.json is located
-    workingDir 'C:/unleash'
-
-    // Print command output for debugging
-    standardOutput = System.out
-    errorOutput = System.err
-}
-
-task runUnleash(type: Exec) {
-    // Path to the Yarn executable in the project
-    def yarnPath = 'C:/unleash-main/.yarn/releases/yarn-4.3.1.cjs'
-
-    // Command to run the application
-    commandLine 'node', yarnPath, 'dev'
-
-    // Set the working directory to where your package.json is located
-    workingDir 'C:/unleash'
-
-    // Print command output for debugging
-    standardOutput = System.out
-    errorOutput = System.err
-}
