@@ -36,7 +36,7 @@ test {
     }
 
     from sourceSets.main.output  // Include compiled classes in the JAR
-    archiveBaseName = 'unleash'  // Name of the JAR file
+    archiveBaseName = 'unleash_test'  // Name of the JAR file
     destinationDirectory = file('build/libs')  // Output directory for the JAR file
 }
 
